@@ -215,8 +215,9 @@ class SolitaireBoard(QWidget):
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, card.rank.label)
         suit_font = QFont("DejaVu Sans", max(10, int(rect.width() * 0.15)), QFont.Weight.DemiBold)
         painter.setFont(suit_font)
-        painter.drawText(QRectF(rect.left() + 6, rect.top() + rect.height() * 0.16,
-                                rect.width() * 0.42, rect.height() * 0.18),
+        # Keep rank and suit side-by-side in the exposed strip of overlapping tableau cards.
+        painter.drawText(QRectF(rect.left() + rect.width() * 0.27, rect.top() + 4,
+                                rect.width() * 0.24, rect.height() * 0.20),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop, card.suit.symbol)
         painter.setFont(QFont("DejaVu Sans", max(24, int(rect.width() * 0.43)), QFont.Weight.Bold))
         painter.drawText(rect.adjusted(4, 10, -4, -8), Qt.AlignmentFlag.AlignCenter, card.suit.symbol)
