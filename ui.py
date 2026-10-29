@@ -167,7 +167,7 @@ class SolitaireBoard(QWidget):
         painter.save()
         path = QPainterPath()
         path.addRoundedRect(rect, 8, 8)
-        painter.fillPath(path, QBrush(QColor("#f7f7f2"))))
+        painter.fillPath(path, QBrush(QColor("#f7f7f2")))
         inner = rect.adjusted(4, 4, -4, -4)
         inner_path = QPainterPath()
         inner_path.addRoundedRect(inner, 5, 5)
