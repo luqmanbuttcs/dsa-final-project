@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from PyQt6.QtCore import Qt, QRectF, QSize
 from PyQt6.QtGui import (
-    QColor, QFont, QLinearGradient, QPainter, QPainterPath, QPen,
+    QColor, QBrush, QFont, QLinearGradient, QPainter, QPainterPath, QPen,
 )
 from PyQt6.QtWidgets import (
     QButtonGroup, QHBoxLayout, QLabel, QMainWindow, QMessageBox, QPushButton,
@@ -84,7 +84,7 @@ class SolitaireBoard(QWidget):
         background = QLinearGradient(0, 0, 0, self.height())
         background.setColorAt(0, TABLE_LIGHT)
         background.setColorAt(1, TABLE)
-        painter.fillRect(self.rect(), background)
+        painter.fillRect(self.rect(), QBrush(background))
         painter.setPen(QPen(QColor(255, 255, 255, 14), 1))
         for y in range(0, self.height(), 46):
             painter.drawLine(0, y, self.width(), y)
@@ -150,7 +150,7 @@ class SolitaireBoard(QWidget):
         self, painter: QPainter, rect: QRectF, label: str = "", suit: Suit | None = None
     ) -> None:
         painter.save()
-        painter.setBrush(QColor(2, 27, 20, 18))
+        painter.setBrush(QBrush(QColor(2, 27, 20, 18)))
         painter.setPen(QPen(_SLOT, 1.7, Qt.PenStyle.DashLine))
         painter.drawRoundedRect(rect, 9, 9)
         if suit is not None:
@@ -167,14 +167,14 @@ class SolitaireBoard(QWidget):
         painter.save()
         path = QPainterPath()
         path.addRoundedRect(rect, 8, 8)
-        painter.fillPath(path, QColor("#f7f7f2"))
+        painter.fillPath(path, QBrush(QColor("#f7f7f2"))))
         inner = rect.adjusted(4, 4, -4, -4)
         inner_path = QPainterPath()
         inner_path.addRoundedRect(inner, 5, 5)
         gradient = QLinearGradient(inner.topLeft(), inner.bottomRight())
         gradient.setColorAt(0, QColor("#245ca4"))
         gradient.setColorAt(1, QColor("#102d62"))
-        painter.fillPath(inner_path, gradient)
+        painter.fillPath(inner_path, QBrush(gradient))
         painter.save()
         painter.setClipPath(inner_path)
         painter.setPen(QPen(QColor(225, 238, 255, 90), 1))
@@ -186,7 +186,7 @@ class SolitaireBoard(QWidget):
             x += spacing
         painter.restore()
         painter.setPen(QPen(_GOLD if selected else QColor("#f2f2eb"), 3 if selected else 1.2))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setBrush(QBrush(Qt.BrushStyle.NoBrush))
         painter.drawRoundedRect(rect.adjusted(1, 1, -1, -1), 8, 8)
         if selected:
             painter.setPen(QPen(_GOLD, 3))
@@ -203,7 +203,7 @@ class SolitaireBoard(QWidget):
         face = QLinearGradient(rect.topLeft(), rect.bottomRight())
         face.setColorAt(0, QColor("#ffffff"))
         face.setColorAt(1, QColor("#eceee8"))
-        painter.fillPath(path, face)
+        painter.fillPath(path, QBrush(face))
         painter.setPen(QPen(_GOLD if selected else QColor("#c8d0c8"), 3 if selected else 1.1))
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRoundedRect(rect.adjusted(0.7, 0.7, -0.7, -0.7), 8, 8)
