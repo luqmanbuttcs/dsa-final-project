@@ -52,7 +52,7 @@ ui.py                    QMainWindow, custom QPainter board, mouse interactions
 main.py                  PyQt6 application entry point
 tests/
   test_data_structures.py
-test_game.py
+  test_game.py
 requirements.txt
 README.md
 ```
