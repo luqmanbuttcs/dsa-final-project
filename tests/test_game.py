@@ -1,6 +1,6 @@
 import unittest
 
-from card import Card, Rank, Suit
+from card import Card, Rank, Suit, make_deck
 from data_structures import Queue, Stack
 from game import GameEngine, MoveDestination, MoveSource
 
@@ -24,6 +24,23 @@ class GameSetupTests(unittest.TestCase):
         location = game.card_positions[game.tableau[0].peek().card_id]
         self.assertEqual(location["zone"], "tableau")
         self.assertEqual(location["pile"], 0)
+
+    def test_victory_requires_all_cards_in_foundations(self):
+        game = GameEngine(seed=4)
+        self.assertFalse(game.has_won)
+        deck = make_deck()
+        game.stock = Queue()
+        game.waste = Stack()
+        game.tableau = [Stack() for _ in range(7)]
+        game.foundations = {suit: Stack() for suit in Suit}
+        for suit in Suit:
+            suited_cards = [card for card in deck if card.suit == suit]
+            for card in suited_cards:
+                card.face_up = True
+            game.foundations[suit] = Stack(suited_cards)
+        game._rebuild_position_index()
+        self.assertTrue(game.has_won)
+        self.assertTrue(game.deck_integrity_ok())
 
 
 class StockTests(unittest.TestCase):
@@ -129,6 +146,34 @@ class MoveTests(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertEqual(game.foundations[Suit.HEARTS].peek().card_id, ace.card_id)
         self.assertEqual(len(game.waste), 0)
+
+    def test_face_up_sequence_moves_as_a_unit(self):
+        game = self.small_game()
+        sequence = [
+            Card(Suit.SPADES, Rank.KING, True),
+            Card(Suit.HEARTS, Rank.QUEEN, True),
+            Card(Suit.SPADES, Rank.JACK, True),
+        ]
+        game.tableau[0] = Stack(sequence)
+        game.tableau[6] = Stack()
+        game._rebuild_position_index()
+        result = game.move(MoveSource("tableau", 0, 0), MoveDestination("tableau", 6))
+        self.assertTrue(result.success, result.message)
+        self.assertEqual([card.card_id for card in game.tableau[6]], [card.card_id for card in sequence])
+        self.assertEqual(len(game.tableau[0]), 0)
+
+    def test_foundation_top_can_return_to_tableau_when_legal(self):
+        game = self.small_game()
+        foundation_cards = [Card(Suit.HEARTS, Rank(rank), True) for rank in range(1, 6)]
+        game.foundations[Suit.HEARTS] = Stack(foundation_cards)
+        game.tableau[0] = Stack([Card(Suit.CLUBS, Rank.SIX, True)])
+        game._rebuild_position_index()
+        result = game.move(
+            MoveSource("foundation", Suit.HEARTS.value), MoveDestination("tableau", 0)
+        )
+        self.assertTrue(result.success, result.message)
+        self.assertEqual(game.tableau[0].peek().rank, Rank.FIVE)
+        self.assertEqual(game.foundations[Suit.HEARTS].peek().rank, Rank.FOUR)
 
     def test_foundation_requires_ace_to_king_and_matching_suit(self):
         game = self.small_game()
